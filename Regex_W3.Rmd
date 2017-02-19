@@ -1,0 +1,83 @@
+---
+title: "REGEX Week 3 Assignment"
+author: "Ambra"
+date: "February 17, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Solving problems 3 and 4 from Chapter 8 of "Automated Data Collection in R"
+
+```{r RegexCh8}
+
+ library(stringr)
+
+#Copy the introductory example
+
+raw.data <- "555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555 -6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+
+name <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}")) 
+
+
+#3)a Rearrange as per first_name last_name standard
+
+##I am aware this is not the most linear way to proceed. Create a new vector by replacing content before "," with content after "," 
+## Replace vector components by index 
+
+NameReverse <- str_c(str_trim(str_replace_all(unlist(str_extract_all(name, ",(.*)")),",", "" )), str_trim(str_replace_all(unlist(str_extract_all(name, "[[:upper:]]\\w+,")),",", "" )), sep= " ")
+
+
+indexword<- grep(",", name)
+
+indexword
+
+name[2]<-NameReverse[1]
+name[5]<-NameReverse[2]
+
+name
+
+ 
+#3)b What strings contain a title (boolean and results)?
+
+titlelog<- unlist(str_detect(name, "[[:alpha:]]{2,3}\\.")) 
+titlelog
+
+titleresults<- grep("[[:alpha:]]{2,3}\\.", name, value=T)
+titleresults
+
+#3)c What strings contain a second name?
+
+##Looking for Initial followed by "."
+
+secnamelog<-unlist(str_detect(name, "[[:upper:]]{1}\\.")) 
+secnamelog
+
+secnameresults<- grep("[[:upper:]]{1}\\.", name, value=T)
+secnameresults
+
+
+#4)  Describe the types of strings that conform to the following regular expressions and construct an example that is matched by the regular expression.
+
+first<- str_extract("1000$", "[0-9]+\\$")
+##"$" is escaped, therefore it must be interpreted literally rather than as end of the word. A price tag can be a fitting example.
+
+second<-str_extract("luca", "\\b[a-z]{1,4}\\b")
+## String containing between 1 and 4 lower case characters 
+
+third<-str_extract("filename1 and 2.txt", ".*?\\.txt$")
+##String ending in ".txt". As the preceeding item is optional, also a string reading just ".txt" will fit.
+
+fourth<-str_extract("10/19/1981", "\\d{2}/\\d{2}/\\d{4}")
+##Date format (2 digits/2 digits/4 digits)
+
+fifth <-str_extract( "<whatever 543> whatever 123 </whatever 543>","<(.+?)>.+?</\\1>")
+## The "<", ">" symbols are not preceeded by "\\", therefore they will be literally rendered. "\\1" at the end stands for repetition.
+
+
+
+```
